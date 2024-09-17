@@ -7,9 +7,7 @@ pacman::p_load(
   "tidyverse",
   "sf",
   "httr",
-  "jsonlite",
   "janitor",
-  "tmap"
 )
 
 conflict_prefer("select", "dplyr")  # Will prefer dplyr::select over any other package
@@ -373,6 +371,8 @@ rm(username, password, url.aggr, url.cicc, url.cicc2021, urlvillage, level5.test
 #Create Pf & Mixed variables, and assumed local pv, pf&mix to prepare for the foci characterization
 lao.cases <- lao.cases %>% 
   mutate(across(mal_t_positive_actual_2018:p_falciparum_relapsed_2024, replace_na, 0),   #replace all NAs with 0
+         
+         # Calculating pfmix_for each year
          mal_t_positive_pfmix_2018 = mal_t_positive_mix_2018 + mal_t_positive_p_f_2018,
          mal_t_positive_pfmix_2019 = mal_t_positive_mix_2019 + mal_t_positive_p_f_2019,
          mal_t_positive_pfmix_2020 = mal_t_positive_mix_2020 + mal_t_positive_p_f_2020,
@@ -380,29 +380,45 @@ lao.cases <- lao.cases %>%
          mal_t_positive_pfmix_2022 = mal_t_positive_mix_2022 + mal_t_positive_p_f_2022,
          mal_t_positive_pfmix_2023 = mal_t_positive_mix_2023 + mal_t_positive_p_f_2023,
          mal_t_positive_pfmix_2024 = mal_t_positive_mix_2024 + mal_t_positive_p_f_2024,
+         
+         # Calculating pfmix imported for each year
          pfmix_imported_2021 = p_falciparum_imported_2021 + mixed_imported_2021,
          pfmix_imported_2022 = p_falciparum_imported_2022 + mixed_imported_2022,
          pfmix_imported_2023 = p_falciparum_imported_2023 + mixed_imported_2023,
          pfmix_imported_2024= p_falciparum_imported_2023 + mixed_imported_2024,
+         
+         
          # pfmix_induced_2024= p_falciparum_induced_2024 + mixed_induced_2024,         #uncomment if Pf & mixed induced found in 2024
+         
+         # Calculating pfmix_relapsed for each year
+         
          pfmix_relapsed_2021 = p_falciparum_relapsed_2021,                             #no mixed relapsed found in 2021
          pfmix_relapsed_2022 = p_falciparum_relapsed_2022,                             #no mixed relapsed found in 2022
          pfmix_relapsed_2023 = p_falciparum_relapsed_2023,
          pfmix_relapsed_2024= p_falciparum_relapsed_2024,                              #uncomment ,if Pf & mixed relpased found in 2024
-         pv_assumed_local_2018 = mal_t_positive_p_v_actual_2018_2022_2018, #No CICC in 2018, all cases assumed local                       
+         
+         # Calculating pfmix assumed local for each year
+         
+         pfmix_assumed_local_2018 = mal_t_positive_pfmix_2018,             #No CICC in 2018, all cases assumed local                       
+         pfmix_assumed_local_2019 = mal_t_positive_pfmix_2019,             #No CICC in 2019, all cases assumed local                          
+         pfmix_assumed_local_2020 = mal_t_positive_pfmix_2020,             #No CICC in 2020, all cases assumed local
+         pfmix_assumed_local_2021 = mal_t_positive_pfmix_2021 - pfmix_imported_2021,      
+         pfmix_assumed_local_2022 = mal_t_positive_pfmix_2022 - pfmix_imported_2022,      
+         pfmix_assumed_local_2023 = mal_t_positive_pfmix_2023 - pfmix_imported_2023, 
+         pfmix_assumed_local_2024 = mal_t_positive_pfmix_2024 - pfmix_imported_2024,
+         
+         # Calculating pv assumed local for each year
+         
+         pv_assumed_local_2018 = mal_t_positive_p_v_actual_2018_2022_2018,  #No CICC in 2018, all cases assumed local                       
          pv_assumed_local_2019 = mal_t_positive_p_v_actual_2018_2022_2019,  #No CICC in 2019, all cases assumed local                          
-         pv_assumed_local_2020 = mal_t_positive_p_v_actual_2018_2022_2020, #No CICC in 2020, all cases assumed local
+         pv_assumed_local_2020 = mal_t_positive_p_v_actual_2018_2022_2020,  #No CICC in 2020, all cases assumed local
          pv_assumed_local_2021 = mal_t_positive_p_v_actual_2018_2022_2021 - p_vivax_imported_2021,  
          pv_assumed_local_2022 = mal_t_positive_p_v_actual_2018_2022_2022 - p_vivax_imported_2022,      
          pv_assumed_local_2023 = mal_t_positive_p_v_actual_2018_2022_2023 - p_vivax_imported_2023, 
          pv_assumed_local_2024 = mal_t_positive_p_v_actual_2018_2022_2024 - p_vivax_imported_2024,
-         pfmix_assumed_local_2018 = mal_t_positive_pfmix_2018,             #No CICC in 2018, all cases assumed local                       
-         pfmix_assumed_local_2019 = mal_t_positive_pfmix_2019,             #No CICC in 2019, all cases assumed local                          
-         pfmix_assumed_local_2020 = mal_t_positive_pfmix_2020,             #No CICC in 2020, all cases assumed local
-         pfmix_assumed_local_2021 = mal_t_positive_pfmix_2021,      
-         pfmix_assumed_local_2022 = mal_t_positive_pfmix_2022,      
-         pfmix_assumed_local_2023 = mal_t_positive_pfmix_2023, 
-         pfmix_assumed_local_2024 = mal_t_positive_pfmix_2024 - pfmix_imported_2024,
+         
+         # Calculating total malaria assumed local for each year
+         
          mal_assumed_local_2018= mal_t_positive_actual_2018,               #No CICC in 2018, all cases assumed local
          mal_assumed_local_2019= mal_t_positive_actual_2019,               #No CICC in 2019, all cases assumed local
          mal_assumed_local_2020= mal_t_positive_actual_2020,               #No CICC in 2020, all cases assumed local
