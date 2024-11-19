@@ -1,5 +1,3 @@
-rm(list=ls())
-
 ### Packages ### ----------------------------------------------------------------
 
 pacman::p_load(
@@ -21,7 +19,7 @@ getOrgUnitsByLevel <- function(user, pass, level){
   
   # Create the URL for all org units
   ouLvl <- if(is.numeric(level)) paste0('&level=', level) else ''
-  allOuUrl = paste0('https://hmis.gov.la/hmis/api/29/organisationUnits.csv?paging=FALSE', ouLvl)
+  allOuUrl = paste0("https://hmis.gov.la/hmis/api/29/organisationUnits.csv?paging=FALSE", ouLvl)
   
   # Get a CSV and turn it into a dataframe
   allOus <- GET(
@@ -36,7 +34,7 @@ getOrgUnitsByLevel <- function(user, pass, level){
     read_csv()
   
   # Create the URL
-  locationUrl = paste0('https://hmis.gov.la/hmis/api/29/organisationUnits.geojson?level=', level)
+  locationUrl = paste0("https://hmis.gov.la/hmis/api/29/organisationUnits.geojson?level=", level)
   
   # Get the GeoJSON and convert it to a SF object
   locations <- GET(
@@ -226,17 +224,6 @@ cicc.complete <- merge(cicc.complete,
   relocate (organisationunitid, orgunitlevel2, orgunitlevel3, orgunitlevel4) %>% 
   #remove cases wrongly assigned to Toum as Elimination Districts
   filter(!orgunitlevel3=="1403 Toumlan")
-
-
-#Associate #MS Savannakhet (Malaria) (orgganisationunitid = aUAwzhOEh3F) as level 4 and level3, as they are not reported in the dataset
-cicc.complete$orgunitlevel4[cicc.complete$organisationunitid == "aUAwzhOEh3F" ] <- "MS Savannakhet (Malaria)"
-cicc.complete$orgunitlevel3[cicc.complete$organisationunitid == "aUAwzhOEh3F" ] <- "MS Savannakhet (Malaria)"
-cicc.complete$orgunitlevel2[cicc.complete$organisationunitid == "aUAwzhOEh3F" ] <- "13 Savannakhet"
-
-#Associate #MS Khammouan (Malaria) (orgganisationunitid = D4unRCyiUfw) as level 4 and level 3
-cicc.complete$orgunitlevel4[cicc.complete$organisationunitid == "D4unRCyiUfw" ] <- "MS Khammouan (Malaria)"
-cicc.complete$orgunitlevel3[cicc.complete$organisationunitid == "D4unRCyiUfw" ] <- "MS Khammouan (Malaria)"
-cicc.complete$orgunitlevel2[cicc.complete$organisationunitid == "D4unRCyiUfw" ] <- "12 Khammouan"
 
 # 3) Use the function: impute_orgunit() to identify the org unit under level 3 that do not have any org unit as level 4, and classify them as their value in level 3 not associated to any NA,
 fixed.orgunit <- impute_orgunit(aggr.cases$orgunitlevel4,aggr.cases$orgunitlevel3)
