@@ -1,4 +1,7 @@
 ### Packages ### ----------------------------------------------------------------
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages("pacman")
+}
 
 pacman::p_load(
   "conflicted",
@@ -415,6 +418,9 @@ lao.cases <- lao.cases %>%
          mal_assumed_local_2024= mal_t_positive_actual_2024 - pfmix_imported_2024 - p_vivax_imported_2024) %>% 
   relocate(orgunitlevel1, orgunitlevel2, orgunitlevel3, orgunitlevel4, organisationunitid, organisationunitname) %>% 
   arrange(orgunitlevel3)
+
+#Output verification
+lao.cases %>% summary()
 
 #Save file
 write.csv(lao.cases, "results/lao.cases_cicc.csv", row.names = F, fileEncoding = "UTF-8")
